@@ -103,8 +103,35 @@ def analyze():
     competitors = report_data["competitors"]
 
     # ── Score ──────────────────────────────────────────────────────────────────
-    scores = calculate_score(business, competitors)
     competitor_scores = [calculate_score(c, [])["total"] for c in competitors]
+
+    # Top competitor by score (used in personalised copy)
+    top_competitor = None
+    top_competitor_name = None
+    competitors_beating = 0
+    review_ratio_text = "fler kunder från Google"
+
+    if competitors and competitor_scores:
+        top_idx = max(range(len(competitor_scores)), key=lambda i: competitor_scores[i])
+        top_competitor = competitors[top_idx]
+        top_competitor_name = top_competitor["name"]
+
+    scores = calculate_score(business, competitors, top_competitor_name=top_competitor_name)
+
+    if competitor_scores:
+        competitors_beating = sum(1 for s in competitor_scores if s > scores["total"])
+
+    if top_competitor:
+        user_reviews = business.get("review_count", 1) or 1
+        top_reviews  = top_competitor.get("review_count", 0)
+        if top_reviews > user_reviews:
+            ratio = top_reviews / user_reviews
+            if ratio >= 3:
+                review_ratio_text = f"{int(ratio)}x fler kunder från Google"
+            elif ratio >= 2:
+                review_ratio_text = "dubbelt så många kunder från Google"
+            elif ratio >= 1.5:
+                review_ratio_text = "50% fler kunder från Google"
 
     # ── Generate PDF (stored in memory as bytes) ───────────────────────────────
     pdf_bytes = None
@@ -135,9 +162,12 @@ def analyze():
         "business_name": business_name,
         "city":          city,
         "business":      business,
-        "competitors":   competitors,
-        "competitor_scores": competitor_scores,
-        "scores":        scores,
+        "competitors":        competitors,
+        "competitor_scores":  competitor_scores,
+        "scores":             scores,
+        "top_competitor_name": top_competitor_name,
+        "competitors_beating": competitors_beating,
+        "review_ratio_text":  review_ratio_text,
         "pdf_bytes":     pdf_bytes,
     }
 

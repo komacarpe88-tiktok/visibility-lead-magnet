@@ -452,6 +452,28 @@ input::placeholder { color: #ADB5BD; }
 .grade-D, .legend-d { background: rgba(255,112,67,.2);  color: #FF7043; border-color: rgba(255,112,67,.4); }
 .grade-F, .legend-f { background: rgba(231,76,60,.2);   color: #E74C3C; border-color: rgba(231,76,60,.4); }
 
+/* Score context line */
+.score-context {
+  color: #FFD54F;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  margin: 0.2rem 0 1.8rem;
+}
+.score-context strong { color: #fff; }
+
+/* Competitor callout */
+.competitor-callout {
+  font-size: 1.05rem;
+  color: var(--text);
+  background: #FFF3CD;
+  border-left: 4px solid var(--yellow);
+  border-radius: 6px;
+  padding: 0.85rem 1.2rem;
+  margin-bottom: 1.2rem;
+}
+.competitor-callout strong { color: var(--navy); }
+
 /* Download CTA */
 .download-cta { text-align: center; }
 .btn-download {

@@ -72,56 +72,67 @@ def _response_rate_score(reviews_responded: int, reviews_returned: int) -> float
     return round((reviews_responded / reviews_returned) * 5, 1)
 
 
-def _get_recommendations(scores: dict, business: dict) -> list[str]:
-    tips = []
+def _get_recommendations(scores: dict, business: dict, top_competitor_name: str | None = None) -> list[str]:
+    rival = top_competitor_name or "dina konkurrenter"
+    tips  = []
 
     if scores["rating_score"] < 15:
         tips.append(
-            "Ditt stjärnbetyg är under genomsnittet. Uppmana aktivt nöjda kunder att lämna "
-            "5-stjärniga recensioner och hantera negativ feedback snabbt och professionellt."
+            f"Du förlorar kunder till {rival} varje dag på grund av ditt betyg — "
+            f"det är det första potentiella kunder ser. Här är hur du fixar det på 48 timmar: "
+            f"skicka ett enkelt SMS till dina senaste 20 kunder och be om en ärlig recension. "
+            f"Svara på all negativ feedback professionellt inom 24 timmar."
         )
     if scores["reviews_score"] < 15:
         tips.append(
-            "Du har färre recensioner än dina lokala konkurrenter. Kör en kampanj för att samla "
-            "recensioner – ett enkelt SMS eller e-postmeddelande efter besöket fungerar utmärkt."
+            f"{rival} dominerar sökresultaten delvis för att de har fler recensioner än dig. "
+            f"Recensioner är den starkaste synlighetssignalen på Google. "
+            f"Sätt upp ett automatiskt uppföljningsmeddelande efter varje avslutat jobb — "
+            f"det tar 10 minuter att bygga och genererar recensioner på autopilot."
         )
     if scores["photos_score"] < 12:
         tips.append(
-            "Din Google-profil behöver fler foton. Ladda upp minst 10 högkvalitativa bilder av "
-            "din butik, interiör, personal och produkter/tjänster."
+            f"Profiler med 10+ foton får upp till 35% fler klick än de utan. "
+            f"Ladda upp minst 10 högkvalitativa bilder av din verksamhet — exteriör, interiör, "
+            f"personal och arbete i fält. Det tar en timme och ger omedelbar effekt."
         )
 
     comp = scores.get("completeness_breakdown", {})
     if not comp.get("has_website"):
         tips.append(
-            "Du har ingen webbplats listad på din Google Business-profil. Lägg till din "
-            "webbadress – det ökar trovärdigheten och driver trafik."
+            f"Du har ingen webbplats kopplad till din Google-profil. {rival} har det. "
+            f"Google belönar kompletta profiler med bättre placeringar — lägg till din "
+            f"webbadress direkt i Google Business-profilen."
         )
     if not comp.get("has_phone"):
         tips.append(
-            "Du saknar ett telefonnummer på din Google-profil. Lägg till ditt nummer så att "
-            "kunder enkelt kan kontakta dig direkt från sökresultaten."
+            f"Ditt telefonnummer saknas på Google. Kunder som hittar dig söker ofta "
+            f"efter att ringa direkt — utan synligt nummer väljer de nästa företag i listan. "
+            f"Lägg till numret i Google Business-profilen idag."
         )
     if not comp.get("has_hours"):
         tips.append(
-            "Du har inga öppettider inställda. Lägg till dina öppettider i Google Business – "
-            "det är ett av de viktigaste signalerna för lokal synlighet."
+            f"Du har inga öppettider inställda på Google. Det är en av de viktigaste "
+            f"rankingfaktorerna för lokal sökning och en av de enklaste att fixa — "
+            f"logga in i Google Business och lägg till dina tider nu."
         )
     if not comp.get("has_specific_categories"):
         tips.append(
-            "Din profil saknar specifika Google-kategorier. Se till att din primärkategori och "
-            "tilläggskategorier är korrekt inställda i Google Business-profilen."
+            f"Din profil saknar specifika kategorier. Google använder kategorier för att "
+            f"avgöra vilka sökningar du ska visas för — utan rätt kategorier missar du "
+            f"kunder som söker exakt det du erbjuder."
         )
-
     if scores["description_score"] == 0:
         tips.append(
-            "Du saknar en företagsbeskrivning. Lägg till en nyckelordsrik beskrivning i din "
-            "Google Business-profil för att förbättra relevansen i sökresultaten."
+            f"Du saknar en företagsbeskrivning på Google. En välskriven, nyckelordsrik "
+            f"beskrivning förbättrar din synlighet i sök och ger kunder en anledning att "
+            f"välja dig framför {rival}."
         )
     if scores["response_score"] < 3:
         tips.append(
-            "Svara på alla kundrecensioner – både positiva och negativa. Företag som svarar "
-            "regelbundet rankar högre i lokala sökresultat och vinner kundernas förtroende."
+            f"Du svarar inte på dina recensioner. Google tolkar det som att du inte bryr "
+            f"dig om dina kunder — och rankar dig därefter. Sätt av 10 minuter i veckan "
+            f"för att svara på alla recensioner, positiva som negativa."
         )
 
     if not tips:
@@ -133,7 +144,7 @@ def _get_recommendations(scores: dict, business: dict) -> list[str]:
     return tips
 
 
-def calculate_score(business: dict, competitors: list[dict]) -> dict:
+def calculate_score(business: dict, competitors: list[dict], top_competitor_name: str | None = None) -> dict:
     comp_review_counts = [c["review_count"] for c in competitors if c["review_count"]]
     competitor_avg = (
         sum(comp_review_counts) / len(comp_review_counts) if comp_review_counts else 0
@@ -172,7 +183,7 @@ def calculate_score(business: dict, competitors: list[dict]) -> dict:
         "competitor_avg_reviews": round(competitor_avg, 1),
     }
 
-    scores["recommendations"] = _get_recommendations(scores, business)
+    scores["recommendations"] = _get_recommendations(scores, business, top_competitor_name)
     scores["grade"] = _grade(total)
 
     scores["max_scores"] = {

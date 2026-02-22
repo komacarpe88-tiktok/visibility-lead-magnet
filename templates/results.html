@@ -58,6 +58,13 @@
         </div>
       </div>
 
+      <!-- Kontextmening under poängen -->
+      {% if competitors_beating > 0 %}
+      <p class="score-context">
+        Din poäng är lägre än <strong>{{ competitors_beating }} av {{ competitors|length }} konkurrenter</strong> i ditt område
+      </p>
+      {% endif %}
+
       <!-- Nedladdning -->
       {% if pdf_path %}
       <div class="download-cta">
@@ -133,9 +140,11 @@
   <section class="competitors-section">
     <div class="container">
       <h2 class="section-title">Lokal konkurrentjämförelse</h2>
-      <p class="section-subtitle">
-        Hur din Google Business-profil står sig mot de 5 närmaste konkurrenterna.
+      {% if top_competitor_name %}
+      <p class="competitor-callout">
+        <strong>{{ top_competitor_name }}</strong> får {{ review_ratio_text }} än dig just nu
       </p>
+      {% endif %}
       <div class="table-wrapper">
         <table class="competitors-table">
           <thead>
@@ -212,13 +221,13 @@
     <div class="container">
       <div class="book-call-card">
         <div class="book-call-content">
-          <h2>Vill du ha experthjälp för att förbättra din poäng?</h2>
+          <h2>Din poäng kostar dig kunder just nu</h2>
           <p>
-            Våra specialister på lokal SEO kan implementera dessa förbättringar åt dig – snabbt.
-            Boka ett <strong>gratis 20-minuters strategisamtal</strong> och ta reda på exakt
-            hur vi kan hjälpa dig att dominera lokala sökresultat.
+            Varje dag du väntar vinner dina konkurrenter fler kunder på Google.
+            Boka ett <strong>gratis 20-minuterssamtal</strong> så visar vi exakt vad som
+            behöver fixas och hur snabbt det kan göras.
           </p>
-          <a href="https://api.leadconnectorhq.com/widget/booking/tLul2UjJ4lCOYMicz8eX" target="_blank" class="btn-book-call">Boka mitt gratis strategisamtal →</a>
+          <a href="https://api.leadconnectorhq.com/widget/booking/tLul2UjJ4lCOYMicz8eX" target="_blank" class="btn-book-call">Ja, jag vill ha fler kunder →</a>
         </div>
         <div class="book-call-score">
           <div class="big-score-badge grade-{{ scores.grade }}">
