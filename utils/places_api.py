@@ -250,14 +250,63 @@ def build_full_report_data(business_name: str, city: str) -> dict:
         )
 
     business_profile = get_place_details(search_result["place_id"])
-    competitors = get_competitors(
+
+    # Fetch more candidates than needed so we can filter out large chains
+    raw_competitors = get_competitors(
         location=business_profile["location"],
         primary_type=business_profile["primary_type"],
         exclude_place_id=business_profile["place_id"],
-        limit=5,
+        limit=10,
+    )
+
+    competitors = _filter_local_competitors(
+        raw_competitors,
+        own_review_count=business_profile["review_count"],
+        want=5,
     )
 
     return {
         "business": business_profile,
         "competitors": competitors,
     }
+
+
+def _filter_local_competitors(
+    candidates: list[dict],
+    own_review_count: int,
+    want: int = 5,
+) -> list[dict]:
+    """
+    Remove disproportionately large chains before benchmarking.
+
+    Strategy:
+      - Cap = max(own_review_count × 25, 300)
+        e.g. a business with 12 reviews → cap at 300
+             a business with 100 reviews → cap at 2 500
+      - Keep candidates under the cap, sorted by review count descending
+        so we use the most-reviewed local businesses first.
+      - If filtering leaves fewer than 2 results, fall back to the
+        original list (better than no comparison at all).
+    """
+    own = max(own_review_count, 1)
+    cap = max(own * 25, 300)
+
+    local = [c for c in candidates if c["review_count"] <= cap]
+    local.sort(key=lambda c: c["review_count"], reverse=True)
+
+    if len(local) >= 2:
+        logger.info(
+            "Competitor filter: kept %d/%d (cap=%d reviews)",
+            len(local), len(candidates), cap,
+        )
+        return local[:want]
+
+    # Fallback: all candidates, take the ones closest in size to the target
+    logger.warning(
+        "Competitor filter: fewer than 2 local results after filtering — using closest by size"
+    )
+    candidates_sorted = sorted(
+        candidates,
+        key=lambda c: abs(c["review_count"] - own),
+    )
+    return candidates_sorted[:want]
