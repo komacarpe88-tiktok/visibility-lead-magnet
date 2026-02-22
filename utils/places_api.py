@@ -29,17 +29,9 @@ def _api_key():
     return os.getenv("GOOGLE_PLACES_API_KEY", "")
 
 
-def find_business(business_name: str, city: str) -> dict | None:
-    """
-    Search for a business by name and city using Text Search.
-    Returns a dict with place_id, name, formatted_address, and geometry,
-    or None if not found.
-    """
-    query = f"{business_name} {city}"
-    params = {
-        "query": query,
-        "key": _api_key(),
-    }
+def _textsearch(query: str) -> dict | None:
+    """Run a single Text Search query and return the first result, or None."""
+    params = {"query": query, "key": _api_key()}
     try:
         resp = requests.get(f"{BASE_URL}/textsearch/json", params=params, timeout=10)
         resp.raise_for_status()
@@ -48,9 +40,9 @@ def find_business(business_name: str, city: str) -> dict | None:
         logger.error("Text Search request failed: %s", exc)
         raise
 
-    if data.get("status") not in ("OK", "ZERO_RESULTS"):
-        logger.error("Places API error: %s — %s", data.get("status"), data.get("error_message"))
-        raise ValueError(f"Places API error: {data.get('status')}")
+    status = data.get("status")
+    if status not in ("OK", "ZERO_RESULTS"):
+        raise ValueError(f"Places API error: {status} — {data.get('error_message')}")
 
     results = data.get("results", [])
     if not results:
@@ -59,11 +51,52 @@ def find_business(business_name: str, city: str) -> dict | None:
     top = results[0]
     return {
         "place_id": top["place_id"],
-        "name": top.get("name", business_name),
+        "name": top.get("name", ""),
         "formatted_address": top.get("formatted_address", ""),
         "location": top.get("geometry", {}).get("location", {}),
         "types": top.get("types", []),
     }
+
+
+def _simplify_name(name: str) -> str:
+    """Strip common Swedish/English legal suffixes to broaden search."""
+    import re
+    return re.sub(
+        r"\b(AB|HB|KB|Aktiebolag|Ltd|GmbH|Inc|LLC|Ek\.?för\.?|ekonomisk förening)\b",
+        "",
+        name,
+        flags=re.IGNORECASE,
+    ).strip(" ,.-")
+
+
+def find_business(business_name: str, city: str) -> dict | None:
+    """
+    Search for a business using up to four progressively broader queries.
+    Returns a normalised dict or None if nothing is found.
+    """
+    simplified = _simplify_name(business_name)
+
+    queries = [
+        f"{business_name} {city}",          # exact name + city
+        f"{business_name}",                  # exact name only (Google geo-ranks by IP)
+        f"{simplified} {city}",              # stripped name + city
+        f"{simplified}",                     # stripped name only
+    ]
+    # Deduplicate while preserving order
+    seen, unique = set(), []
+    for q in queries:
+        q = q.strip()
+        if q and q not in seen:
+            seen.add(q)
+            unique.append(q)
+
+    for query in unique:
+        logger.info("Trying Places search: %s", query)
+        result = _textsearch(query)
+        if result:
+            return result
+
+    return None
 
 
 def get_place_details(place_id: str) -> dict:
@@ -198,8 +231,8 @@ def build_full_report_data(business_name: str, city: str) -> dict:
     search_result = find_business(business_name, city)
     if search_result is None:
         raise ValueError(
-            f"Could not find '{business_name}' in '{city}' on Google Maps. "
-            "Please check the business name and city and try again."
+            f"Vi kunde inte hitta '{business_name}' på Google Maps. "
+            "Kontrollera att företagsnamnet stämmer exakt och att staden är korrekt, och försök igen."
         )
 
     business_profile = get_place_details(search_result["place_id"])
