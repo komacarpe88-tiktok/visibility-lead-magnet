@@ -79,7 +79,10 @@ def _completeness_score(
 
 
 def _description_score(has_description: bool) -> float:
-    return 4.0 if has_description else 0.0
+    # The Places API only returns Google's editorial summary, not the
+    # owner-entered GBP description — so detection is unreliable.
+    # Everyone gets the 4 points; the metric is hidden from the UI.
+    return 4.0
 
 
 def _response_rate_score(reviews_responded: int, reviews_returned: int) -> float:

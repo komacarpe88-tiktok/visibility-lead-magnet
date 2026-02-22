@@ -104,9 +104,6 @@
           ('↩️ Svarsfrekvens',
            scores.response_score, 6,
            business.reviews_responded ~ ' av ' ~ business.reviews_returned ~ ' returnerade recensioner har ägarsvar'),
-          ('📝 Företagsbeskrivning',
-           scores.description_score, 4,
-           'Beskrivning: ' ~ ('Finns ✓' if business.has_description else 'Saknas ✗')),
         ] %}
 
         {% for label, pts, max_pts, note in metrics %}
@@ -190,23 +187,40 @@
       <p class="section-subtitle">
         Baserat på din poäng – här är de åtgärder som ger störst effekt.
       </p>
+      {% set rec_items = [] %}
+      {% if scores.reviews_score < 21 %}{% set _ = rec_items.append('reviews') %}{% endif %}
+      {% if scores.photos_score < 10 %}{% set _ = rec_items.append('photos') %}{% endif %}
+      {% if scores.response_score < 4 %}{% set _ = rec_items.append('response') %}{% endif %}
+
       <div class="recommendations-list">
+        {% set ns = namespace(n=1) %}
+        {% if 'reviews' in rec_items %}
         <div class="recommendation-card">
-          <div class="rec-number">1</div>
+          <div class="rec-number">{{ ns.n }}</div>
           <p class="rec-text">Dina konkurrenter dominerar sökresultaten för att de har fler recensioner än dig. Recensioner är den starkaste synlighetssignalen på Google — och just nu tappar du kunder till dem varje dag. Det här är det snabbaste sättet att vända trenden.</p>
         </div>
+        {% set ns.n = ns.n + 1 %}
+        {% endif %}
+        {% if 'photos' in rec_items %}
         <div class="recommendation-card">
-          <div class="rec-number">2</div>
+          <div class="rec-number">{{ ns.n }}</div>
           <p class="rec-text">Profiler med fler foton får betydligt fler klick än de utan. Din profil är undernärd visuellt jämfört med dina konkurrenter — vilket gör att potentiella kunder väljer bort dig innan de ens kontaktat dig.</p>
         </div>
+        {% set ns.n = ns.n + 1 %}
+        {% endif %}
+        {% if 'response' in rec_items %}
         <div class="recommendation-card">
-          <div class="rec-number">3</div>
-          <p class="rec-text">Du saknar en företagsbeskrivning på Google. Det betyder att Google inte vet vad du erbjuder eller var — och rankar dig därefter. En väloptimerad beskrivning är en av de enklaste vinsterna du kan göra.</p>
-        </div>
-        <div class="recommendation-card">
-          <div class="rec-number">4</div>
+          <div class="rec-number">{{ ns.n }}</div>
           <p class="rec-text">Du svarar inte på dina recensioner. Google tolkar det som ointresse och straffar din synlighet. Dina konkurrenter som svarar vinner den platsen istället.</p>
         </div>
+        {% set ns.n = ns.n + 1 %}
+        {% endif %}
+        {% if rec_items | length == 0 %}
+        <div class="recommendation-card">
+          <div class="rec-number">✓</div>
+          <p class="rec-text">Din profil presterar starkt på de viktigaste punkterna. Det som skiljer marknadsledare från resten är konsistens — att hålla allt uppdaterat och fortsätta driva recensioner månad för månad.</p>
+        </div>
+        {% endif %}
       </div>
       <p class="recommendations-closing">Vill du veta exakt hur vi implementerar allt detta åt dig — på under en vecka? Boka ett gratis 20-minuterssamtal nedan.</p>
     </div>

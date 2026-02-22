@@ -236,8 +236,6 @@ def _score_breakdown_section(styles, scores: dict) -> list:
          "10+ foton = maxpoang (API returnerar max 10 referenser)"),
         ("Svarsfrekvens",       "response_score",      6,
          "Andel av returnerade recensioner med agarsvar"),
-        ("Foretagsbeskrivning", "description_score",   4,
-         "Finns en Google-redaktionell sammanfattning?"),
     ]
 
     # Tabellhuvud
