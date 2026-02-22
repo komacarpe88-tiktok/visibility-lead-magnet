@@ -611,6 +611,14 @@ input::placeholder { color: #ADB5BD; }
   font-weight: 800; font-size: 0.85rem;
 }
 .rec-text { font-size: 0.95rem; color: var(--text); line-height: 1.6; }
+.recommendations-closing {
+  margin-top: 2rem;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--navy);
+  line-height: 1.6;
+}
 
 /* ── Bottom Download CTA ───────────────────────────────────── */
 .bottom-cta-section { background: var(--navy-mid); padding: 4rem 0; }
