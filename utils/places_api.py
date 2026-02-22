@@ -69,20 +69,31 @@ def _simplify_name(name: str) -> str:
     ).strip(" ,.-")
 
 
+def _names_match(search_name: str, result_name: str) -> bool:
+    """
+    Check that the result is plausibly the right business.
+    At least one significant word (4+ chars) from the search must appear
+    in the result name (case-insensitive).
+    """
+    search_words = {w.lower() for w in search_name.split() if len(w) >= 4}
+    result_lower = result_name.lower()
+    return any(w in result_lower for w in search_words)
+
+
 def find_business(business_name: str, city: str) -> dict | None:
     """
-    Search for a business using up to four progressively broader queries.
-    Returns a normalised dict or None if nothing is found.
+    Search for a business using progressively broader queries,
+    but only accept a result whose name matches the original search.
     """
     simplified = _simplify_name(business_name)
 
     queries = [
-        f"{business_name} {city}",          # exact name + city
-        f"{business_name}",                  # exact name only (Google geo-ranks by IP)
-        f"{simplified} {city}",              # stripped name + city
-        f"{simplified}",                     # stripped name only
+        f"{business_name} {city}",   # exact name + city  (most specific)
+        f"{business_name}",           # exact name, no city
+        f"{simplified} {city}",       # stripped suffix + city
+        f"{simplified}",              # stripped suffix, no city
     ]
-    # Deduplicate while preserving order
+
     seen, unique = set(), []
     for q in queries:
         q = q.strip()
@@ -93,8 +104,11 @@ def find_business(business_name: str, city: str) -> dict | None:
     for query in unique:
         logger.info("Trying Places search: %s", query)
         result = _textsearch(query)
-        if result:
+        if result and _names_match(business_name, result["name"]):
+            logger.info("Matched: %s", result["name"])
             return result
+        if result:
+            logger.info("Rejected (name mismatch): search=%r result=%r", business_name, result["name"])
 
     return None
 
