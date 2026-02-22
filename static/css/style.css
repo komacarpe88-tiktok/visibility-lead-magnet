@@ -620,6 +620,149 @@ input::placeholder { color: #ADB5BD; }
   line-height: 1.6;
 }
 
+/* ── Cost Section (dark) ───────────────────────────────────── */
+.cost-section {
+  background: var(--navy);
+  padding: 5rem 0;
+  color: var(--white);
+}
+.cost-section .section-title { color: var(--white); }
+.cost-section .section-subtitle {
+  color: rgba(255,255,255,.72);
+  max-width: 680px;
+  margin: 1rem auto 2.5rem;
+  font-size: 1.05rem;
+  line-height: 1.75;
+}
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-top: 2.5rem;
+}
+.stat-card {
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: var(--radius);
+  padding: 1.8rem 1.5rem;
+  text-align: center;
+}
+.stat-number {
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: var(--cyan);
+  line-height: 1.1;
+  margin-bottom: 0.6rem;
+}
+.stat-card .stat-desc {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,.75);
+  line-height: 1.55;
+}
+.stat-card.stat-highlight .stat-number { color: var(--yellow); }
+
+/* ── Holding Back Section (light) ─────────────────────────── */
+.holding-section {
+  background: var(--white);
+  padding: 5rem 0;
+}
+.holding-section .section-title { color: var(--navy); }
+.holding-section .section-subtitle {
+  color: var(--text-muted);
+  max-width: 680px;
+  margin: 1rem auto 2.5rem;
+  font-size: 1.05rem;
+  line-height: 1.75;
+}
+.checklist {
+  list-style: none;
+  max-width: 520px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+.checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.checklist li::before {
+  content: '✓';
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 26px; height: 26px;
+  background: var(--green);
+  color: var(--white);
+  border-radius: 50%;
+  font-size: 0.8rem;
+  font-weight: 800;
+  margin-top: 0.05rem;
+}
+
+/* ── How We Help Section (dark) ────────────────────────────── */
+.how-help-section {
+  background: var(--navy-mid);
+  padding: 5rem 0;
+  color: var(--white);
+}
+.how-help-section .section-title { color: var(--white); }
+.how-help-section .section-subtitle {
+  color: rgba(255,255,255,.72);
+  max-width: 720px;
+  margin: 1rem auto 2.5rem;
+  font-size: 1.05rem;
+  line-height: 1.75;
+}
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+  margin-top: 2.5rem;
+}
+.step-card {
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: var(--radius);
+  padding: 1.6rem 1.25rem;
+  text-align: center;
+}
+.step-num {
+  width: 40px; height: 40px;
+  background: linear-gradient(135deg, var(--blue), var(--cyan));
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--white);
+  font-weight: 800;
+  font-size: 1rem;
+  margin: 0 auto 0.9rem;
+}
+.step-card p { font-size: 0.9rem; color: rgba(255,255,255,.8); line-height: 1.55; }
+.how-help-closing {
+  margin-top: 2.5rem;
+  text-align: center;
+  font-size: 1rem;
+  color: rgba(255,255,255,.8);
+  max-width: 620px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.7;
+}
+
+/* ── Responsive: new sections ──────────────────────────────── */
+@media (max-width: 768px) {
+  .stat-grid  { grid-template-columns: 1fr; }
+  .steps-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .steps-grid { grid-template-columns: 1fr; }
+}
+
 /* ── Bottom Download CTA ───────────────────────────────────── */
 .bottom-cta-section { background: var(--navy-mid); padding: 4rem 0; }
 .bottom-cta-card {

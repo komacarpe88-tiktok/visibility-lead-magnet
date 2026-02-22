@@ -222,7 +222,103 @@
         </div>
         {% endif %}
       </div>
-      <p class="recommendations-closing">Vill du veta exakt hur vi implementerar allt detta åt dig — på under en vecka? Boka ett gratis 20-minuterssamtal nedan.</p>
+      <p class="recommendations-closing">Vill du veta exakt hur vi implementerar allt detta åt dig — på några timmar? Boka ett gratis 20-minuterssamtal nedan.</p>
+    </div>
+  </section>
+
+  <!-- ── Vad det kostar dig att vänta ─────────────────────────────────────── -->
+  <section class="cost-section">
+    <div class="container">
+      <h2 class="section-title" style="text-align:center;">Varje dag utan synlighet är en förlorad kund</h2>
+      <p class="section-subtitle" style="text-align:center;">
+        En genomsnittlig hantverkare i Sverige tappar 3–5 potentiella kunder per vecka till
+        konkurrenter som syns bättre på Google. Det handlar inte om att de är bättre på sitt
+        jobb — de syns bara bättre. Kunden googlar, ser recensioner och klickar på den som
+        verkar mest pålitlig. Om det inte är du, är det någon annan.
+      </p>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-number">73%</div>
+          <div class="stat-desc">av kunder väljer ett av de 3 första resultaten på Google</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">4x</div>
+          <div class="stat-desc">Företag med 50+ recensioner får 4x fler förfrågningar</div>
+        </div>
+        {% if competitors and competitor_scores %}
+          {% set top_score = competitor_scores | max %}
+          {% set score_diff = top_score - scores.total %}
+          {% if score_diff > 0 %}
+        <div class="stat-card stat-highlight">
+          <div class="stat-number">{{ score_diff }}p</div>
+          <div class="stat-desc">{{ top_competitor_name or 'Din starkaste konkurrent' }} har {{ top_score }} poäng — {{ score_diff }} poäng mer än dig just nu</div>
+        </div>
+          {% else %}
+        <div class="stat-card stat-highlight">
+          <div class="stat-number">{{ scores.total }}p</div>
+          <div class="stat-desc">Du leder jämfört med dina närmaste konkurrenter — fortsätt driva på för att behålla fördelen</div>
+        </div>
+          {% endif %}
+        {% else %}
+        <div class="stat-card stat-highlight">
+          <div class="stat-number">3–5</div>
+          <div class="stat-desc">förlorade kunder per vecka för företag med svag synlighet på Google</div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Vad som håller dig tillbaka ──────────────────────────────────────── -->
+  <section class="holding-section">
+    <div class="container" style="text-align:center;">
+      <h2 class="section-title">Det handlar inte om tid eller pengar</h2>
+      <p class="section-subtitle">
+        De flesta företagare vi pratar med tror att det tar veckor att förbättra sin
+        Google-synlighet. I verkligheten tar det några timmar att implementera ett system
+        som genererar recensioner automatiskt, optimerar din profil och placerar dig högre
+        i sökresultaten — utan att du behöver göra något manuellt efteråt.
+      </p>
+      <ul class="checklist">
+        <li>Ingen teknisk kunskap krävs</li>
+        <li>Fungerar med ditt befintliga bokningssystem</li>
+        <li>Resultat syns inom 2–4 veckor</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ── Så här hjälper vi dig ─────────────────────────────────────────────── -->
+  <section class="how-help-section">
+    <div class="container">
+      <h2 class="section-title" style="text-align:center;">Vi implementerar hela systemet åt dig — på några timmar</h2>
+      <p class="section-subtitle" style="text-align:center;">
+        Vi kopplar ihop ett automatiskt recensionssystem direkt med ditt boknings- eller
+        faktureringssystem. Varje kund du jobbar med får automatiskt en förfrågan om att
+        lämna ett Google-omdöme vid rätt tillfälle. Du behöver inte göra något — systemet
+        jobbar åt dig dygnet runt.
+      </p>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <p>Vi analyserar din nuvarande setup</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <p>Vi kopplar systemet till ditt befintliga verktyg</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <p>Vi konfigurerar automatiska recensionsförfrågningar</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">4</div>
+          <p>Du börjar samla recensioner på autopilot</p>
+        </div>
+      </div>
+      <p class="how-help-closing">
+        Hela implementationen tar 2–3 timmar. Boka ett gratis 20-minuterssamtal så berättar
+        vi exakt hur det fungerar för just ditt företag.
+      </p>
     </div>
   </section>
 
