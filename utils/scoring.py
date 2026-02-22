@@ -145,10 +145,17 @@ def _get_recommendations(scores: dict, business: dict, top_competitor_name: str 
 
 
 def calculate_score(business: dict, competitors: list[dict], top_competitor_name: str | None = None) -> dict:
-    comp_review_counts = [c["review_count"] for c in competitors if c["review_count"]]
-    competitor_avg = (
-        sum(comp_review_counts) / len(comp_review_counts) if comp_review_counts else 0
-    )
+    comp_review_counts = sorted(c["review_count"] for c in competitors if c["review_count"])
+    if comp_review_counts:
+        # Use median so one large chain with 10 000 reviews doesn't tank the score
+        mid = len(comp_review_counts) // 2
+        competitor_avg = (
+            comp_review_counts[mid]
+            if len(comp_review_counts) % 2 == 1
+            else (comp_review_counts[mid - 1] + comp_review_counts[mid]) / 2
+        )
+    else:
+        competitor_avg = 0
 
     rating_score      = _rating_score(business.get("rating", 0))
     reviews_score     = _reviews_score(business.get("review_count", 0), competitor_avg)
