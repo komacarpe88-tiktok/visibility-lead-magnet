@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tail:*)",
+      "Bash(which python3 || which python || py --version 2>&1; pip3 --version 2>&1 || python3 -m pip --version 2>&1 || python -m pip --version 2>&1)",
+      "Bash(cd:*)",
+      "Bash(cd \"/c/Users/Dougl/OneDrive/Dokumenti/Zoom/automations project/visibility-lead-magnet\" && python -c \"\nfrom utils.scoring import calculate_score\nfrom utils.pdf_generator import generate_pdf\n\nbusiness = {\n    'place_id': 'abc123',\n    'name': 'Joes Pizza',\n    'formatted_address': '123 Main St, Austin, TX 78701',\n    'location': {'lat': 30.26, 'lng': -97.74},\n    'rating': 4.3,\n    'review_count': 87,\n    'photo_count': 6,\n    'types': ['restaurant', 'food', 'establishment'],\n    'primary_type': 'restaurant',\n    'has_description': True,\n    'description': 'Best pizza in Austin since 1992.',\n    'reviews_returned': 5,\n    'reviews_responded': 2,\n}\ncompetitors = [\n    {**business, 'place_id': 'c1', 'name': 'Pizza Palace', 'rating': 4.1, 'review_count': 120, 'photo_count': 8, 'has_description': False},\n    {**business, 'place_id': 'c2', 'name': 'Slice Heaven',  'rating': 4.5, 'review_count': 60,  'photo_count': 4, 'has_description': True},\n    {**business, 'place_id': 'c3', 'name': 'The Dough Co', 'rating': 3.8, 'review_count': 200, 'photo_count': 10,'has_description': False},\n]\n\nscores = calculate_score\\(business, competitors\\)\nprint\\('Score:', scores['total'], '  Grade:', scores['grade']\\)\nprint\\('Breakdown:', {k: v for k, v in scores.items\\(\\) if k.endswith\\('_score'\\)}\\)\n\npath = generate_pdf\\('John', business, scores, competitors\\)\nprint\\('PDF saved to:', path\\)\n\nimport os, sys\nsize = os.path.getsize\\(path\\)\nprint\\(f'PDF size: {size:,} bytes'\\)\nif size < 5000:\n    print\\('WARNING: PDF seems too small'\\)\n    sys.exit\\(1\\)\nelse:\n    print\\('PDF looks good!'\\)\n\" 2>&1)",
+      "Bash(true:*)",
+      "Bash(git:*)"
+    ]
+  }
+}

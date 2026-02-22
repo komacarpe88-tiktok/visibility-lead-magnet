@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Free Local Visibility Score | See How You Rank Against Competitors</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body class="landing-page">
+
+  <!-- ── Loading Overlay ─────────────────────────────────────────────────── -->
+  <div id="loading-overlay" class="loading-overlay hidden">
+    <div class="loading-card">
+      <div class="spinner"></div>
+      <h3>Analyzing Your Business…</h3>
+      <p>We're searching Google Maps, scoring your profile, and comparing you to local competitors. This takes about 15–30 seconds.</p>
+      <div class="loading-steps">
+        <div class="step active" id="step-1">🔍 Finding your business on Google Maps</div>
+        <div class="step" id="step-2">📊 Fetching competitor data</div>
+        <div class="step" id="step-3">🧮 Calculating your visibility score</div>
+        <div class="step" id="step-4">📄 Generating your PDF report</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Navigation ──────────────────────────────────────────────────────── -->
+  <header class="site-header">
+    <div class="container">
+      <div class="logo">
+        <span class="logo-icon">📍</span>
+        <span class="logo-text">LocalRank<strong>Pro</strong></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Hero ────────────────────────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-badge">FREE VISIBILITY AUDIT — TAKES 60 SECONDS</div>
+      <h1 class="hero-title">
+        How Visible Is Your Business<br />
+        <span class="hero-highlight">on Google?</span>
+      </h1>
+      <p class="hero-subtitle">
+        Enter your business details below. We'll instantly scan Google Maps, compare you to your
+        top 5 local competitors, and generate a <strong>free PDF report</strong> with your
+        personalised visibility score and action plan.
+      </p>
+
+      <!-- ── Flash Messages ─────────────────────────────────────────────── -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="flash-container">
+            {% for category, message in messages %}
+              <div class="flash flash--{{ category }}">
+                <span class="flash-icon">{% if category == 'error' %}⚠️{% else %}✅{% endif %}</span>
+                {{ message }}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      <!-- ── Form ──────────────────────────────────────────────────────── -->
+      <div class="form-card">
+        <div class="form-card-header">
+          <h2>Get Your Free Score</h2>
+          <p>No credit card. No commitment. Instant results.</p>
+        </div>
+        <form id="audit-form" action="/analyze" method="POST" novalidate>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="first_name">First Name <span class="required">*</span></label>
+              <input
+                type="text"
+                id="first_name"
+                name="first_name"
+                placeholder="John"
+                required
+                autocomplete="given-name"
+              />
+            </div>
+            <div class="form-group">
+              <label for="phone">Phone Number</label>
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                placeholder="+1 (555) 000-0000"
+                autocomplete="tel"
+              />
+            </div>
+            <div class="form-group form-group--full">
+              <label for="email">Email Address <span class="required">*</span></label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="john@example.com"
+                required
+                autocomplete="email"
+              />
+            </div>
+            <div class="form-group form-group--full">
+              <label for="business_name">Business Name <span class="required">*</span></label>
+              <input
+                type="text"
+                id="business_name"
+                name="business_name"
+                placeholder="e.g. Joe's Plumbing Services"
+                required
+              />
+            </div>
+            <div class="form-group form-group--full">
+              <label for="city">City <span class="required">*</span></label>
+              <input
+                type="text"
+                id="city"
+                name="city"
+                placeholder="e.g. Austin, TX"
+                required
+              />
+            </div>
+          </div>
+
+          <button type="submit" class="btn-submit" id="submit-btn">
+            <span class="btn-text">Reveal My Score →</span>
+          </button>
+
+          <p class="form-disclaimer">
+            🔒 Your information is private and will never be sold or spammed.
+          </p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Social Proof / How It Works ────────────────────────────────────── -->
+  <section class="how-it-works">
+    <div class="container">
+      <h2 class="section-title">How It Works</h2>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-number">1</div>
+          <h3>Enter Your Details</h3>
+          <p>Fill in your business name and city. That's all we need to get started.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">2</div>
+          <h3>We Scan Google Maps</h3>
+          <p>Our system analyses your Google Business Profile and compares you to your top 5 local competitors.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">3</div>
+          <h3>Get Your Score & Report</h3>
+          <p>Receive a detailed visibility score out of 100 plus a downloadable PDF with an action plan.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Metrics Explained ───────────────────────────────────────────────── -->
+  <section class="metrics-section">
+    <div class="container">
+      <h2 class="section-title">What We Measure</h2>
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-icon">⭐</div>
+          <h4>Star Rating</h4>
+          <p>Your Google rating vs. the ideal 5.0</p>
+          <span class="metric-pts">25 pts</span>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon">💬</div>
+          <h4>Review Volume</h4>
+          <p>How your review count compares to local competitors</p>
+          <span class="metric-pts">25 pts</span>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon">📸</div>
+          <h4>Photos</h4>
+          <p>The number of photos on your profile</p>
+          <span class="metric-pts">20 pts</span>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon">🏷️</div>
+          <h4>Categories</h4>
+          <p>How many relevant business categories you have listed</p>
+          <span class="metric-pts">15 pts</span>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon">📝</div>
+          <h4>Description</h4>
+          <p>Whether your profile includes a business description</p>
+          <span class="metric-pts">10 pts</span>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon">↩️</div>
+          <h4>Response Rate</h4>
+          <p>How often you respond to customer reviews</p>
+          <span class="metric-pts">5 pts</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Footer ──────────────────────────────────────────────────────────── -->
+  <footer class="site-footer">
+    <div class="container">
+      <p>© 2025 LocalRankPro. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

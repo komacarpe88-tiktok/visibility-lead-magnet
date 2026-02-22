@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Error | LocalRankPro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body class="landing-page">
+  <header class="site-header">
+    <div class="container">
+      <div class="logo">
+        <span class="logo-icon">📍</span>
+        <span class="logo-text">LocalRank<strong>Pro</strong></span>
+      </div>
+    </div>
+  </header>
+  <section class="hero" style="min-height: 60vh; display: flex; align-items: center;">
+    <div class="container" style="text-align: center;">
+      <div style="font-size: 4rem; margin-bottom: 1rem;">⚠️</div>
+      <h1 style="color: #fff; margin-bottom: 1rem;">Something went wrong</h1>
+      <p style="color: #B0BEC5; margin-bottom: 2rem; font-size: 1.1rem;">{{ message }}</p>
+      <a href="/" class="btn-submit" style="display: inline-block; text-decoration: none; width: auto; padding: 0.9rem 2.5rem;">
+        Try Again →
+      </a>
+    </div>
+  </section>
+  <footer class="site-footer">
+    <div class="container">
+      <p>© 2025 LocalRankPro. All rights reserved.</p>
+    </div>
+  </footer>
+</body>
+</html>

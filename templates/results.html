@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Visibility Score — {{ business.name }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body class="results-page">
+
+  <!-- ── Navigation ──────────────────────────────────────────────────────── -->
+  <header class="site-header">
+    <div class="container">
+      <div class="logo">
+        <span class="logo-icon">📍</span>
+        <span class="logo-text">LocalRank<strong>Pro</strong></span>
+      </div>
+      <a href="/" class="btn-secondary-sm">Run Another Audit</a>
+    </div>
+  </header>
+
+  <!-- ── Hero Score Section ──────────────────────────────────────────────── -->
+  <section class="results-hero">
+    <div class="container">
+      <div class="results-intro">
+        <p class="results-greeting">Hi {{ first_name }}, here are your results for</p>
+        <h1 class="results-business-name">{{ business.name }}</h1>
+        <p class="results-address">📍 {{ business.formatted_address }}</p>
+      </div>
+
+      <!-- Score Gauge -->
+      <div class="score-gauge-wrapper">
+        <div class="score-gauge">
+          <svg viewBox="0 0 200 130" class="gauge-svg">
+            <!-- Background arc -->
+            <path
+              d="M 20 110 A 80 80 0 0 1 180 110"
+              fill="none"
+              stroke="#E9ECEF"
+              stroke-width="18"
+              stroke-linecap="round"
+            />
+            <!-- Score arc (drawn by JS) -->
+            <path
+              id="gauge-arc"
+              d="M 20 110 A 80 80 0 0 1 180 110"
+              fill="none"
+              stroke="#1565C0"
+              stroke-width="18"
+              stroke-linecap="round"
+              stroke-dasharray="0 252"
+              style="transition: stroke-dasharray 1.5s cubic-bezier(0.4,0,0.2,1);"
+            />
+          </svg>
+          <div class="gauge-center">
+            <span class="gauge-score" id="gauge-score-display">0</span>
+            <span class="gauge-out-of">/100</span>
+            <span class="gauge-grade grade-{{ scores.grade }}" id="gauge-grade">{{ scores.grade }}</span>
+          </div>
+        </div>
+        <div class="score-legend">
+          <span class="legend-item legend-a">A  85–100</span>
+          <span class="legend-item legend-b">B  70–84</span>
+          <span class="legend-item legend-c">C  55–69</span>
+          <span class="legend-item legend-d">D  40–54</span>
+          <span class="legend-item legend-f">F  0–39</span>
+        </div>
+      </div>
+
+      <!-- Download CTA -->
+      {% if pdf_path %}
+      <div class="download-cta">
+        <a href="/download/{{ token }}" class="btn-download">
+          📥 Download Your Free PDF Report
+        </a>
+        <p class="download-note">Includes your full score breakdown, competitor comparison, and action plan.</p>
+      </div>
+      {% endif %}
+    </div>
+  </section>
+
+  <!-- ── Score Breakdown ─────────────────────────────────────────────────── -->
+  <section class="breakdown-section">
+    <div class="container">
+      <h2 class="section-title">Score Breakdown</h2>
+      <div class="breakdown-grid">
+
+        {% set metrics = [
+          ('⭐ Rating',            scores.rating_score,      25, 'Based on your ' ~ business.rating ~ ' star Google rating'),
+          ('💬 Review Volume',     scores.reviews_score,     25, 'You have ' ~ business.review_count ~ ' reviews vs ' ~ scores.competitor_avg_reviews ~ ' competitor average'),
+          ('📸 Photos',            scores.photos_score,      20, 'Your profile has ' ~ business.photo_count ~ ' photo(s) listed'),
+          ('🏷️ Categories',        scores.categories_score,  15, 'Your profile lists ' ~ business.types|length ~ ' category/categories'),
+          ('📝 Description',       scores.description_score, 10, 'Business description: ' ~ ('Present ✓' if business.has_description else 'Missing ✗')),
+          ('↩️ Response Rate',     scores.response_score,     5, business.reviews_responded ~ ' of ' ~ business.reviews_returned ~ ' returned reviews have owner replies'),
+        ] %}
+
+        {% for label, pts, max_pts, note in metrics %}
+          {% set pct = (pts / max_pts * 100) | int %}
+          {% if pct >= 70 %}
+            {% set tier = 'good' %}
+          {% elif pct >= 40 %}
+            {% set tier = 'warn' %}
+          {% else %}
+            {% set tier = 'poor' %}
+          {% endif %}
+          <div class="metric-breakdown-card metric-{{ tier }}">
+            <div class="metric-header">
+              <span class="metric-label">{{ label }}</span>
+              <span class="metric-pts-display">{{ pts }} / {{ max_pts }}</span>
+            </div>
+            <div class="metric-bar-bg">
+              <div class="metric-bar-fill metric-bar-{{ tier }}" style="width: {{ pct }}%"></div>
+            </div>
+            <p class="metric-note">{{ note }}</p>
+          </div>
+        {% endfor %}
+
+      </div>
+
+      <!-- Total score row -->
+      <div class="total-score-row">
+        <span>Total Visibility Score</span>
+        <span class="total-score-value">{{ scores.total }} / 100</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Competitor Comparison ───────────────────────────────────────────── -->
+  {% if competitors %}
+  <section class="competitors-section">
+    <div class="container">
+      <h2 class="section-title">Local Competitor Comparison</h2>
+      <p class="section-subtitle">
+        How your Google Business Profile stacks up against the top 5 nearby competitors.
+      </p>
+      <div class="table-wrapper">
+        <table class="competitors-table">
+          <thead>
+            <tr>
+              <th>Business</th>
+              <th>Rating</th>
+              <th>Reviews</th>
+              <th>Photos</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="your-row">
+              <td><strong>{{ business.name }}</strong> <span class="you-badge">YOU</span></td>
+              <td>{{ business.rating }} ★</td>
+              <td>{{ "{:,}".format(business.review_count) }}</td>
+              <td>{{ business.photo_count }}</td>
+              <td>{% if business.has_description %}<span class="yes">✓ Yes</span>{% else %}<span class="no">✗ No</span>{% endif %}</td>
+            </tr>
+            {% for comp in competitors %}
+            <tr>
+              <td>{{ comp.name }}</td>
+              <td>{{ comp.rating }} ★</td>
+              <td>{{ "{:,}".format(comp.review_count) }}</td>
+              <td>{{ comp.photo_count }}</td>
+              <td>{% if comp.has_description %}<span class="yes">✓ Yes</span>{% else %}<span class="no">✗ No</span>{% endif %}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- ── Recommendations ────────────────────────────────────────────────── -->
+  <section class="recommendations-section">
+    <div class="container">
+      <h2 class="section-title">Your Action Plan</h2>
+      <p class="section-subtitle">
+        Based on your score, here are the highest-impact improvements you can make right now.
+      </p>
+      <div class="recommendations-list">
+        {% for tip in scores.recommendations %}
+        <div class="recommendation-card">
+          <div class="rec-number">{{ loop.index }}</div>
+          <p class="rec-text">{{ tip }}</p>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Download CTA (bottom) ──────────────────────────────────────────── -->
+  {% if pdf_path %}
+  <section class="bottom-cta-section">
+    <div class="container">
+      <div class="bottom-cta-card">
+        <h2>Your Free Report Is Ready</h2>
+        <p>Download your full PDF report including score breakdown, competitor analysis, and step-by-step recommendations.</p>
+        <a href="/download/{{ token }}" class="btn-download btn-download--large">
+          📥 Download PDF Report
+        </a>
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- ── Book a Call CTA ────────────────────────────────────────────────── -->
+  <section class="book-call-section">
+    <div class="container">
+      <div class="book-call-card">
+        <div class="book-call-content">
+          <h2>Want Expert Help Improving Your Score?</h2>
+          <p>
+            Our local SEO specialists can implement these improvements for you — fast.
+            Book a <strong>free 20-minute strategy call</strong> and find out exactly
+            how we can help you dominate local search.
+          </p>
+          <a href="#" class="btn-book-call">Book My Free Strategy Call →</a>
+        </div>
+        <div class="book-call-score">
+          <div class="big-score-badge grade-{{ scores.grade }}">
+            {{ scores.total }}<span>/100</span>
+          </div>
+          <p>Your current score</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Footer ──────────────────────────────────────────────────────────── -->
+  <footer class="site-footer">
+    <div class="container">
+      <p>© 2025 LocalRankPro. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    window.FINAL_SCORE = {{ scores.total }};
+    window.SCORE_GRADE = "{{ scores.grade }}";
+  </script>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
