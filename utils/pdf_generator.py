@@ -226,18 +226,18 @@ def _score_breakdown_section(styles, scores: dict) -> list:
     ])
 
     metrics = [
-        ("Stjärnbetyg",         "rating_score",       25,
+        ("Stjärnbetyg",         "rating_score",       35,
          "Baserat på ditt Google-stjärnbetyg (0–5)"),
-        ("Antal recensioner",   "reviews_score",      25,
-         "Ditt antal vs. genomsnittet bland de 5 narmaste konkurrenterna"),
-        ("Antal foton",         "photos_score",       20,
-         "10+ foton = maxpoanG (API returnerar max 10 referenser)"),
-        ("Profilkomplettering", "completeness_score", 15,
-         f"Webb(4p) + Tel(4p) + Oppettider(4p) + Kategorier(3p) | {completeness_detail}"),
-        ("Foretagsbeskrivning", "description_score",  10,
-         "Finns en Google-redaktionell sammanfattning?"),
-        ("Svarsfrekvens",       "response_score",      5,
+        ("Antal recensioner",   "reviews_score",      30,
+         "200+ = 30p  |  100+ = 26p  |  50+ = 21p  |  25+ = 17p  |  10+ = 12p"),
+        ("Profilkomplettering", "completeness_score", 16,
+         f"Webb(4p) + Tel(4p) + Oppettider(4p) + Kategorier(4p) | {completeness_detail}"),
+        ("Antal foton",         "photos_score",       10,
+         "10+ foton = maxpoang (API returnerar max 10 referenser)"),
+        ("Svarsfrekvens",       "response_score",      6,
          "Andel av returnerade recensioner med agarsvar"),
+        ("Foretagsbeskrivning", "description_score",   4,
+         "Finns en Google-redaktionell sammanfattning?"),
     ]
 
     # Tabellhuvud

@@ -17,7 +17,7 @@ from __future__ import annotations
 def _rating_score(rating: float) -> float:
     if not rating:
         return 0.0
-    return round((min(rating, 5.0) / 5.0) * 25, 1)
+    return round((min(rating, 5.0) / 5.0) * 35, 1)
 
 
 def _reviews_score(review_count: int, competitor_avg: float = 0) -> float:
@@ -35,19 +35,19 @@ def _reviews_score(review_count: int, competitor_avg: float = 0) -> float:
         1–4   →  3 pts
         0     →  0 pts
     """
-    if review_count >= 200: return 25.0
-    if review_count >= 100: return 22.0
-    if review_count >= 50:  return 18.0
-    if review_count >= 25:  return 14.0
-    if review_count >= 10:  return 10.0
-    if review_count >= 5:   return  6.0
+    if review_count >= 200: return 30.0
+    if review_count >= 100: return 26.0
+    if review_count >= 50:  return 21.0
+    if review_count >= 25:  return 17.0
+    if review_count >= 10:  return 12.0
+    if review_count >= 5:   return  7.0
     if review_count >= 1:   return  3.0
     return 0.0
 
 
 def _photos_score(photo_count: int) -> float:
-    """10+ foton = maxpoäng (20p). API returnerar max 10."""
-    return round(min(photo_count / 10, 1.0) * 20, 1)
+    """10+ foton = maxpoäng (10p). API returnerar max 10."""
+    return round(min(photo_count / 10, 1.0) * 10, 1)
 
 
 def _completeness_score(
@@ -67,7 +67,7 @@ def _completeness_score(
         (4 if has_website else 0) +
         (4 if has_phone else 0) +
         (4 if has_hours else 0) +
-        (3 if has_specific_categories else 0)
+        (4 if has_specific_categories else 0)
     )
     breakdown = {
         "has_website": has_website,
@@ -79,13 +79,13 @@ def _completeness_score(
 
 
 def _description_score(has_description: bool) -> float:
-    return 10.0 if has_description else 0.0
+    return 4.0 if has_description else 0.0
 
 
 def _response_rate_score(reviews_responded: int, reviews_returned: int) -> float:
     if reviews_returned == 0:
         return 0.0
-    return round((reviews_responded / reviews_returned) * 5, 1)
+    return round((reviews_responded / reviews_returned) * 6, 1)
 
 
 def _get_recommendations(scores: dict, business: dict, top_competitor_name: str | None = None) -> list[str]:
@@ -210,12 +210,12 @@ def calculate_score(business: dict, competitors: list[dict], top_competitor_name
     scores["grade"] = _grade(total)
 
     scores["max_scores"] = {
-        "rating_score": 25,
-        "reviews_score": 25,
-        "photos_score": 20,
-        "completeness_score": 15,
-        "description_score": 10,
-        "response_score": 5,
+        "rating_score": 35,
+        "reviews_score": 30,
+        "photos_score": 10,
+        "completeness_score": 16,
+        "description_score": 4,
+        "response_score": 6,
     }
 
     return scores
