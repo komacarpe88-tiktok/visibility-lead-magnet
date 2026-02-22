@@ -229,7 +229,7 @@ def _score_breakdown_section(styles, scores: dict) -> list:
         ("Stjärnbetyg",         "rating_score",       35,
          "Baserat på ditt Google-stjärnbetyg (0–5)"),
         ("Antal recensioner",   "reviews_score",      30,
-         "200+ = 30p  |  100+ = 26p  |  50+ = 21p  |  25+ = 17p  |  10+ = 12p"),
+         "200+ = 30p  |  100+ = 26p  |  50+ = 21p  |  30+ = 17p  |  20+ = 12p  |  10+ = 7p"),
         ("Profilkomplettering", "completeness_score", 16,
          f"Webb(4p) + Tel(4p) + Oppettider(4p) + Kategorier(4p) | {completeness_detail}"),
         ("Antal foton",         "photos_score",       10,

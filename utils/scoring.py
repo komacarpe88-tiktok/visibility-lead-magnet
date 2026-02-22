@@ -26,21 +26,21 @@ def _reviews_score(review_count: int, competitor_avg: float = 0) -> float:
     Competitor data was unreliable (chains skewed the benchmark).
 
     Thresholds:
-      200+ → 25 pts   (lokal champion)
-      100–199 → 22 pts
-       50–99  → 18 pts
-       25–49  → 14 pts
-       10–24  → 10 pts
-        5–9   →  6 pts
-        1–4   →  3 pts
+      200+ → 30 pts   (exceptionell)
+      100–199 → 26 pts  (utmärkt)
+       50–99  → 21 pts  (bra)
+       30–49  → 17 pts  (godkänd)
+       20–29  → 12 pts  (ok)
+       10–19  →  7 pts  (dålig)
+        1–9   →  3 pts  (mycket dålig)
         0     →  0 pts
     """
     if review_count >= 200: return 30.0
     if review_count >= 100: return 26.0
     if review_count >= 50:  return 21.0
-    if review_count >= 25:  return 17.0
-    if review_count >= 10:  return 12.0
-    if review_count >= 5:   return  7.0
+    if review_count >= 30:  return 17.0
+    if review_count >= 20:  return 12.0
+    if review_count >= 10:  return  7.0
     if review_count >= 1:   return  3.0
     return 0.0
 
@@ -99,7 +99,7 @@ def _get_recommendations(scores: dict, business: dict, top_competitor_name: str 
             f"skicka ett enkelt SMS till dina senaste 20 kunder och be om en ärlig recension. "
             f"Svara på all negativ feedback professionellt inom 24 timmar."
         )
-    if scores["reviews_score"] < 15:
+    if scores["reviews_score"] < 17:
         tips.append(
             f"{rival} dominerar sökresultaten delvis för att de har fler recensioner än dig. "
             f"Recensioner är den starkaste synlighetssignalen på Google. "
