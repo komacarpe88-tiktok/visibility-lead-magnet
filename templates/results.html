@@ -77,6 +77,10 @@
 
       <div class="breakdown-grid">
 
+        {% set photo_display = '10+' if business.photo_count_capped else business.photo_count %}
+        {% set comp = scores.completeness_breakdown %}
+        {% set completeness_note %}Webbplats: {{ '✓' if comp.has_website else '✗' }} &nbsp;|&nbsp; Telefon: {{ '✓' if comp.has_phone else '✗' }} &nbsp;|&nbsp; Öppettider: {{ '✓' if comp.has_hours else '✗' }} &nbsp;|&nbsp; Kategorier: {{ '✓' if comp.has_specific_categories else '✗' }}{% endset %}
+
         {% set metrics = [
           ('⭐ Stjärnbetyg',
            scores.rating_score, 25,
@@ -86,16 +90,16 @@
            'Du har ' ~ business.review_count ~ ' recensioner. Konkurrentsnitt: ' ~ scores.competitor_avg_reviews),
           ('📸 Foton',
            scores.photos_score, 20,
-           'Din profil har ' ~ business.photo_count ~ ' foto(n) (API returnerar max 10)'),
-          ('🏷️ Google-kategorityper',
-           scores.categories_score, 15,
-           'Google klassificerar ditt företag med ' ~ business.types|length ~ ' typ(er) (obs: ej samma som GBP-kategorier)'),
+           'Din profil har ' ~ photo_display ~ ' foto(n). 10+ = maxpoäng.'),
+          ('✅ Profilkomplettering',
+           scores.completeness_score, 15,
+           completeness_note),
           ('📝 Företagsbeskrivning',
            scores.description_score, 10,
            'Beskrivning: ' ~ ('Finns ✓' if business.has_description else 'Saknas ✗')),
           ('↩️ Svarsfrekvens',
            scores.response_score, 5,
-           business.reviews_responded ~ ' av ' ~ business.reviews_returned ~ ' recensioner har agarsvar'),
+           business.reviews_responded ~ ' av ' ~ business.reviews_returned ~ ' returnerade recensioner har ägarsvar'),
         ] %}
 
         {% for label, pts, max_pts, note in metrics %}

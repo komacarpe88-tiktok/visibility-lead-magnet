@@ -217,25 +217,27 @@ def _score_breakdown_section(styles, scores: dict) -> list:
     elements.append(HRFlowable(width="100%", thickness=2, color=CYAN))
     elements.append(Spacer(1, 0.5 * cm))
 
+    comp = scores.get("completeness_breakdown", {})
+    completeness_detail = "  ".join([
+        ("✓ Webb" if comp.get("has_website") else "✗ Webb"),
+        ("✓ Tel" if comp.get("has_phone") else "✗ Tel"),
+        ("✓ Tid" if comp.get("has_hours") else "✗ Tid"),
+        ("✓ Kat" if comp.get("has_specific_categories") else "✗ Kat"),
+    ])
+
     metrics = [
-        ("Stjärnbetyg",              "rating_score",      25,
-         f"{scores.get('_rating', '')}",
+        ("Stjärnbetyg",         "rating_score",       25,
          "Baserat på ditt Google-stjärnbetyg (0–5)"),
-        ("Antal recensioner",        "reviews_score",     25,
-         "",
-         "Ditt antal vs. genomsnittet bland de 5 närmaste konkurrenterna"),
-        ("Antal foton",              "photos_score",      20,
-         "",
-         "Antal foton på din Google Business-profil (API returnerar max 10)"),
-        ("Google-kategorityper",     "categories_score",  15,
-         "",
-         "Antal Google-klassificeringstyper (ej samma som GBP-kategorier)"),
-        ("Företagsbeskrivning",      "description_score", 10,
-         "Ja" if scores.get("description_score", 0) > 0 else "Nej",
-         "Finns det en Google-redaktionell sammanfattning?"),
-        ("Svarsfrekvens recensioner","response_score",     5,
-         "",
-         "Andel recensioner (av de 5 API returnerar) med agarsvar"),
+        ("Antal recensioner",   "reviews_score",      25,
+         "Ditt antal vs. genomsnittet bland de 5 narmaste konkurrenterna"),
+        ("Antal foton",         "photos_score",       20,
+         "10+ foton = maxpoanG (API returnerar max 10 referenser)"),
+        ("Profilkomplettering", "completeness_score", 15,
+         f"Webb(4p) + Tel(4p) + Oppettider(4p) + Kategorier(3p) | {completeness_detail}"),
+        ("Foretagsbeskrivning", "description_score",  10,
+         "Finns en Google-redaktionell sammanfattning?"),
+        ("Svarsfrekvens",       "response_score",      5,
+         "Andel av returnerade recensioner med agarsvar"),
     ]
 
     # Tabellhuvud
@@ -267,7 +269,7 @@ def _score_breakdown_section(styles, scores: dict) -> list:
         Paragraph("Kommentar", styles["table_header"]),
     ]]
 
-    for label, key, max_pts, _extra, note in metrics:
+    for label, key, max_pts, note in metrics:
         pts  = scores.get(key, 0)
         col  = _score_colour(pts, max_pts)
         bar  = _pct_bar(pts, max_pts, 12)

@@ -14,7 +14,8 @@ BASE_URL = "https://maps.googleapis.com/maps/api/place"
 DETAIL_FIELDS = (
     "name,rating,user_ratings_total,photos,types,"
     "editorial_summary,reviews,formatted_address,"
-    "geometry,business_status"
+    "geometry,business_status,"
+    "website,formatted_phone_number,opening_hours"
 )
 
 # Types to skip when selecting the primary competitor search type
@@ -109,6 +110,13 @@ def _normalise_details(place_id: str, result: dict) -> dict:
 
     description = result.get("editorial_summary", {}).get("overview", "")
 
+    # Profile completeness signals
+    has_website  = bool(result.get("website", ""))
+    has_phone    = bool(result.get("formatted_phone_number", ""))
+    has_hours    = bool(result.get("opening_hours", {}).get("weekday_text"))
+    # Specific (non-generic) category = at least one type outside the generic set
+    has_specific_categories = any(t not in GENERIC_TYPES for t in types)
+
     return {
         "place_id": place_id,
         "name": result.get("name", ""),
@@ -116,13 +124,19 @@ def _normalise_details(place_id: str, result: dict) -> dict:
         "location": result.get("geometry", {}).get("location", {}),
         "rating": result.get("rating", 0.0),
         "review_count": result.get("user_ratings_total", 0),
-        "photo_count": len(photos),
+        "photo_count": len(photos),           # capped at 10 by API
+        "photo_count_capped": len(photos) >= 10,  # True = business has 10+ photos
         "types": types,
         "primary_type": primary_type,
         "has_description": bool(description),
         "description": description,
         "reviews_returned": total_reviews_returned,
         "reviews_responded": responded,
+        # Profile completeness
+        "has_website": has_website,
+        "has_phone": has_phone,
+        "has_hours": has_hours,
+        "has_specific_categories": has_specific_categories,
     }
 
 

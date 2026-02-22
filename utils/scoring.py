@@ -4,8 +4,9 @@ Synlighetspoäng – beräkningsmotor.
 Poäng av 100:
   - Stjärnbetyg                  25 p
   - Recensioner vs lokalt snitt  25 p
-  - Antal foton                  20 p
-  - Antal Google-kategorier      15 p
+  - Antal foton (10+ = max)      20 p
+  - Profilkomplettering          15 p
+      webbplats (4p) + telefon (4p) + öppettider (4p) + kategorier (3p)
   - Företagsbeskrivning          10 p
   - Svarsfrekvens på recensioner  5 p
 """
@@ -14,14 +15,12 @@ from __future__ import annotations
 
 
 def _rating_score(rating: float) -> float:
-    """0–5 stjärnor → 0–25 p."""
     if not rating:
         return 0.0
     return round((min(rating, 5.0) / 5.0) * 25, 1)
 
 
 def _reviews_score(review_count: int, competitor_avg: float) -> float:
-    """Antal recensioner vs konkurrentsnitt → 0–25 p."""
     if competitor_avg <= 0:
         if review_count >= 100:
             return 25.0
@@ -31,30 +30,49 @@ def _reviews_score(review_count: int, competitor_avg: float) -> float:
 
 
 def _photos_score(photo_count: int) -> float:
-    """0–10+ foton → 0–20 p (API returnerar max 10)."""
+    """10+ foton = maxpoäng (20p). API returnerar max 10."""
     return round(min(photo_count / 10, 1.0) * 20, 1)
 
 
-def _categories_score(type_count: int) -> float:
-    """1–5+ Google-typer → 0–15 p."""
-    return round(min(type_count / 5, 1.0) * 15, 1)
+def _completeness_score(
+    has_website: bool,
+    has_phone: bool,
+    has_hours: bool,
+    has_specific_categories: bool,
+) -> tuple[float, dict]:
+    """
+    Profilkomplettering → 0–15 p
+      Webbplats listad:          4 p
+      Telefonnummer listat:      4 p
+      Öppettider inställda:      4 p
+      Specifika kategorier:      3 p
+    """
+    pts = (
+        (4 if has_website else 0) +
+        (4 if has_phone else 0) +
+        (4 if has_hours else 0) +
+        (3 if has_specific_categories else 0)
+    )
+    breakdown = {
+        "has_website": has_website,
+        "has_phone": has_phone,
+        "has_hours": has_hours,
+        "has_specific_categories": has_specific_categories,
+    }
+    return float(pts), breakdown
 
 
 def _description_score(has_description: bool) -> float:
-    """Företagsbeskrivning finns → 10 p."""
     return 10.0 if has_description else 0.0
 
 
 def _response_rate_score(reviews_responded: int, reviews_returned: int) -> float:
-    """Andel recensioner med ägarens svar → 0–5 p."""
     if reviews_returned == 0:
         return 0.0
-    rate = reviews_responded / reviews_returned
-    return round(rate * 5, 1)
+    return round((reviews_responded / reviews_returned) * 5, 1)
 
 
 def _get_recommendations(scores: dict, business: dict) -> list[str]:
-    """Returnerar åtgärdsorienterade rekommendationer för låga delmått."""
     tips = []
 
     if scores["rating_score"] < 15:
@@ -69,14 +87,32 @@ def _get_recommendations(scores: dict, business: dict) -> list[str]:
         )
     if scores["photos_score"] < 12:
         tips.append(
-            "Din Google-profil behöver fler foton. Ladda upp högkvalitativa bilder av din butik, "
-            "interiör, personal och produkter/tjänster för att öka trovärdigheten."
+            "Din Google-profil behöver fler foton. Ladda upp minst 10 högkvalitativa bilder av "
+            "din butik, interiör, personal och produkter/tjänster."
         )
-    if scores["categories_score"] < 9:
+
+    comp = scores.get("completeness_breakdown", {})
+    if not comp.get("has_website"):
         tips.append(
-            "Din profil har få registrerade Google-typer. Se till att din Google Business-profil "
-            "har rätt primär- och tilläggskategorier inställda för maximal synlighet."
+            "Du har ingen webbplats listad på din Google Business-profil. Lägg till din "
+            "webbadress – det ökar trovärdigheten och driver trafik."
         )
+    if not comp.get("has_phone"):
+        tips.append(
+            "Du saknar ett telefonnummer på din Google-profil. Lägg till ditt nummer så att "
+            "kunder enkelt kan kontakta dig direkt från sökresultaten."
+        )
+    if not comp.get("has_hours"):
+        tips.append(
+            "Du har inga öppettider inställda. Lägg till dina öppettider i Google Business – "
+            "det är ett av de viktigaste signalerna för lokal synlighet."
+        )
+    if not comp.get("has_specific_categories"):
+        tips.append(
+            "Din profil saknar specifika Google-kategorier. Se till att din primärkategori och "
+            "tilläggskategorier är korrekt inställda i Google Business-profilen."
+        )
+
     if scores["description_score"] == 0:
         tips.append(
             "Du saknar en företagsbeskrivning. Lägg till en nyckelordsrik beskrivning i din "
@@ -98,16 +134,6 @@ def _get_recommendations(scores: dict, business: dict) -> list[str]:
 
 
 def calculate_score(business: dict, competitors: list[dict]) -> dict:
-    """
-    Beräknar synlighetspoäng för `business` relativt `competitors`.
-
-    Returnerar ett dict med:
-      - total, rating_score, reviews_score, photos_score,
-        categories_score, description_score, response_score
-      - competitor_avg_reviews
-      - recommendations  (lista med strängar)
-      - grade  ('A', 'B', 'C', 'D', 'F')
-    """
     comp_review_counts = [c["review_count"] for c in competitors if c["review_count"]]
     competitor_avg = (
         sum(comp_review_counts) / len(comp_review_counts) if comp_review_counts else 0
@@ -116,7 +142,12 @@ def calculate_score(business: dict, competitors: list[dict]) -> dict:
     rating_score      = _rating_score(business.get("rating", 0))
     reviews_score     = _reviews_score(business.get("review_count", 0), competitor_avg)
     photos_score      = _photos_score(business.get("photo_count", 0))
-    categories_score  = _categories_score(len(business.get("types", [])))
+    completeness_score, completeness_breakdown = _completeness_score(
+        has_website=business.get("has_website", False),
+        has_phone=business.get("has_phone", False),
+        has_hours=business.get("has_hours", False),
+        has_specific_categories=business.get("has_specific_categories", False),
+    )
     description_score = _description_score(business.get("has_description", False))
     response_score    = _response_rate_score(
         business.get("reviews_responded", 0),
@@ -125,7 +156,7 @@ def calculate_score(business: dict, competitors: list[dict]) -> dict:
 
     total = int(
         rating_score + reviews_score + photos_score +
-        categories_score + description_score + response_score
+        completeness_score + description_score + response_score
     )
     total = min(total, 100)
 
@@ -134,7 +165,8 @@ def calculate_score(business: dict, competitors: list[dict]) -> dict:
         "rating_score": rating_score,
         "reviews_score": reviews_score,
         "photos_score": photos_score,
-        "categories_score": categories_score,
+        "completeness_score": completeness_score,
+        "completeness_breakdown": completeness_breakdown,
         "description_score": description_score,
         "response_score": response_score,
         "competitor_avg_reviews": round(competitor_avg, 1),
@@ -147,7 +179,7 @@ def calculate_score(business: dict, competitors: list[dict]) -> dict:
         "rating_score": 25,
         "reviews_score": 25,
         "photos_score": 20,
-        "categories_score": 15,
+        "completeness_score": 15,
         "description_score": 10,
         "response_score": 5,
     }
