@@ -29,6 +29,13 @@ def _api_key():
     return os.getenv("GOOGLE_PLACES_API_KEY", "")
 
 
+def _same_industry(business_types: list, competitor_types: list) -> bool:
+    """Return True if two businesses share at least one specific (non-generic) type."""
+    biz_specific  = {t for t in business_types  if t not in GENERIC_TYPES}
+    comp_specific = {t for t in competitor_types if t not in GENERIC_TYPES}
+    return bool(biz_specific & comp_specific)
+
+
 def _textsearch(query: str) -> dict | None:
     """Run a single Text Search query and return the first result, or None."""
     params = {"query": query, "key": _api_key()}
@@ -190,14 +197,27 @@ def _normalise_details(place_id: str, result: dict) -> dict:
 def get_competitors(
     location: dict,
     primary_type: str,
+    business_types: list,
     exclude_place_id: str,
     limit: int = 5,
 ) -> list[dict]:
     """
     Find nearby competitors of the same type.
     Returns a list of normalised profile dicts (up to `limit`).
+
+    If the business only has generic types (e.g. point_of_interest), nearby
+    search would return random prominent places (hotels, restaurants, etc.).
+    In that case we bail out early and return an empty list.
     """
     if not location:
+        return []
+
+    # Guard: if the resolved type is still generic the search would return
+    # completely unrelated places — skip competitor fetching entirely.
+    if primary_type in GENERIC_TYPES:
+        logger.warning(
+            "primary_type '%s' is generic — skipping competitor search", primary_type
+        )
         return []
 
     params = {
@@ -225,6 +245,13 @@ def get_competitors(
             continue
         try:
             profile = get_place_details(pid)
+            # Reject businesses from a completely different industry
+            if not _same_industry(business_types, profile["types"]):
+                logger.info(
+                    "Skipping '%s' — different industry (types: %s)",
+                    profile["name"], profile["types"],
+                )
+                continue
             competitors.append(profile)
         except Exception as exc:
             logger.warning("Skipping competitor %s: %s", pid, exc)
@@ -255,6 +282,7 @@ def build_full_report_data(business_name: str, city: str) -> dict:
     raw_competitors = get_competitors(
         location=business_profile["location"],
         primary_type=business_profile["primary_type"],
+        business_types=business_profile["types"],
         exclude_place_id=business_profile["place_id"],
         limit=10,
     )
