@@ -20,13 +20,29 @@ def _rating_score(rating: float) -> float:
     return round((min(rating, 5.0) / 5.0) * 25, 1)
 
 
-def _reviews_score(review_count: int, competitor_avg: float) -> float:
-    if competitor_avg <= 0:
-        if review_count >= 100:
-            return 25.0
-        return round(min(review_count / 100, 1.0) * 25, 1)
-    ratio = review_count / competitor_avg
-    return round(min(ratio / 1.5, 1.0) * 25, 1)
+def _reviews_score(review_count: int, competitor_avg: float = 0) -> float:
+    """
+    Absolute scale — no competitor dependency.
+    Competitor data was unreliable (chains skewed the benchmark).
+
+    Thresholds:
+      200+ → 25 pts   (lokal champion)
+      100–199 → 22 pts
+       50–99  → 18 pts
+       25–49  → 14 pts
+       10–24  → 10 pts
+        5–9   →  6 pts
+        1–4   →  3 pts
+        0     →  0 pts
+    """
+    if review_count >= 200: return 25.0
+    if review_count >= 100: return 22.0
+    if review_count >= 50:  return 18.0
+    if review_count >= 25:  return 14.0
+    if review_count >= 10:  return 10.0
+    if review_count >= 5:   return  6.0
+    if review_count >= 1:   return  3.0
+    return 0.0
 
 
 def _photos_score(photo_count: int) -> float:
