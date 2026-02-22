@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sv">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Free Local Visibility Score | See How You Rank Against Competitors</title>
+  <title>Gratis lokal synlighetsanalys | Se hur du rankar mot konkurrenterna</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -11,22 +11,22 @@
 </head>
 <body class="landing-page">
 
-  <!-- ── Loading Overlay ─────────────────────────────────────────────────── -->
+  <!-- ── Laddningsöverlagring ────────────────────────────────────────────── -->
   <div id="loading-overlay" class="loading-overlay hidden">
     <div class="loading-card">
       <div class="spinner"></div>
-      <h3>Analyzing Your Business…</h3>
-      <p>We're searching Google Maps, scoring your profile, and comparing you to local competitors. This takes about 15–30 seconds.</p>
+      <h3>Analyserar ditt företag…</h3>
+      <p>Vi söker på Google Maps, hämtar konkurrentdata och beräknar din synlighetspoäng. Det tar ca 15–30 sekunder.</p>
       <div class="loading-steps">
-        <div class="step active" id="step-1">🔍 Finding your business on Google Maps</div>
-        <div class="step" id="step-2">📊 Fetching competitor data</div>
-        <div class="step" id="step-3">🧮 Calculating your visibility score</div>
-        <div class="step" id="step-4">📄 Generating your PDF report</div>
+        <div class="step active" id="step-1">🔍 Hittar ditt företag på Google Maps</div>
+        <div class="step" id="step-2">📊 Hämtar konkurrentdata</div>
+        <div class="step" id="step-3">🧮 Beräknar din synlighetspoäng</div>
+        <div class="step" id="step-4">📄 Genererar din PDF-rapport</div>
       </div>
     </div>
   </div>
 
-  <!-- ── Navigation ──────────────────────────────────────────────────────── -->
+  <!-- ── Sidhuvud ─────────────────────────────────────────────────────────── -->
   <header class="site-header">
     <div class="container">
       <div class="logo">
@@ -36,21 +36,21 @@
     </div>
   </header>
 
-  <!-- ── Hero ────────────────────────────────────────────────────────────── -->
+  <!-- ── Hero ─────────────────────────────────────────────────────────────── -->
   <section class="hero">
     <div class="container">
-      <div class="hero-badge">FREE VISIBILITY AUDIT — TAKES 60 SECONDS</div>
+      <div class="hero-badge">GRATIS SYNLIGHETSANALYS — TAR 60 SEKUNDER</div>
       <h1 class="hero-title">
-        How Visible Is Your Business<br />
-        <span class="hero-highlight">on Google?</span>
+        Hur synligt är ditt företag<br />
+        <span class="hero-highlight">på Google?</span>
       </h1>
       <p class="hero-subtitle">
-        Enter your business details below. We'll instantly scan Google Maps, compare you to your
-        top 5 local competitors, and generate a <strong>free PDF report</strong> with your
-        personalised visibility score and action plan.
+        Fyll i dina företagsuppgifter nedan. Vi skannar direkt Google Maps, jämför dig med dina
+        5 närmaste lokala konkurrenter och genererar en <strong>gratis PDF-rapport</strong> med
+        din personliga synlighetspoäng och handlingsplan.
       </p>
 
-      <!-- ── Flash Messages ─────────────────────────────────────────────── -->
+      <!-- Flash-meddelanden -->
       {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
           <div class="flash-container">
@@ -64,153 +64,153 @@
         {% endif %}
       {% endwith %}
 
-      <!-- ── Form ──────────────────────────────────────────────────────── -->
+      <!-- ── Formulär ───────────────────────────────────────────────────── -->
       <div class="form-card">
         <div class="form-card-header">
-          <h2>Get Your Free Score</h2>
-          <p>No credit card. No commitment. Instant results.</p>
+          <h2>Hämta din gratis poäng</h2>
+          <p>Inget kreditkort. Inget åtagande. Omedelbart resultat.</p>
         </div>
         <form id="audit-form" action="/analyze" method="POST" novalidate>
           <div class="form-grid">
             <div class="form-group">
-              <label for="first_name">First Name <span class="required">*</span></label>
+              <label for="first_name">Förnamn <span class="required">*</span></label>
               <input
                 type="text"
                 id="first_name"
                 name="first_name"
-                placeholder="John"
+                placeholder="Erik"
                 required
                 autocomplete="given-name"
               />
             </div>
             <div class="form-group">
-              <label for="phone">Phone Number</label>
+              <label for="phone">Telefonnummer</label>
               <input
                 type="tel"
                 id="phone"
                 name="phone"
-                placeholder="+1 (555) 000-0000"
+                placeholder="+46 70 000 00 00"
                 autocomplete="tel"
               />
             </div>
             <div class="form-group form-group--full">
-              <label for="email">Email Address <span class="required">*</span></label>
+              <label for="email">E-postadress <span class="required">*</span></label>
               <input
                 type="email"
                 id="email"
                 name="email"
-                placeholder="john@example.com"
+                placeholder="erik@exempel.se"
                 required
                 autocomplete="email"
               />
             </div>
             <div class="form-group form-group--full">
-              <label for="business_name">Business Name <span class="required">*</span></label>
+              <label for="business_name">Företagsnamn <span class="required">*</span></label>
               <input
                 type="text"
                 id="business_name"
                 name="business_name"
-                placeholder="e.g. Joe's Plumbing Services"
+                placeholder="t.ex. Eriks VVS AB"
                 required
               />
             </div>
             <div class="form-group form-group--full">
-              <label for="city">City <span class="required">*</span></label>
+              <label for="city">Stad <span class="required">*</span></label>
               <input
                 type="text"
                 id="city"
                 name="city"
-                placeholder="e.g. Austin, TX"
+                placeholder="t.ex. Stockholm"
                 required
               />
             </div>
           </div>
 
           <button type="submit" class="btn-submit" id="submit-btn">
-            <span class="btn-text">Reveal My Score →</span>
+            <span class="btn-text">Visa min poäng →</span>
           </button>
 
           <p class="form-disclaimer">
-            🔒 Your information is private and will never be sold or spammed.
+            🔒 Din information är privat och kommer aldrig att säljas eller användas för spam.
           </p>
         </form>
       </div>
     </div>
   </section>
 
-  <!-- ── Social Proof / How It Works ────────────────────────────────────── -->
+  <!-- ── Hur det fungerar ──────────────────────────────────────────────────── -->
   <section class="how-it-works">
     <div class="container">
-      <h2 class="section-title">How It Works</h2>
+      <h2 class="section-title">Hur det fungerar</h2>
       <div class="steps-grid">
         <div class="step-card">
           <div class="step-number">1</div>
-          <h3>Enter Your Details</h3>
-          <p>Fill in your business name and city. That's all we need to get started.</p>
+          <h3>Ange dina uppgifter</h3>
+          <p>Fyll i ditt företagsnamn och stad. Det är allt vi behöver för att komma igång.</p>
         </div>
         <div class="step-card">
           <div class="step-number">2</div>
-          <h3>We Scan Google Maps</h3>
-          <p>Our system analyses your Google Business Profile and compares you to your top 5 local competitors.</p>
+          <h3>Vi skannar Google Maps</h3>
+          <p>Vårt system analyserar din Google Business-profil och jämför dig med dina 5 närmaste lokala konkurrenter.</p>
         </div>
         <div class="step-card">
           <div class="step-number">3</div>
-          <h3>Get Your Score & Report</h3>
-          <p>Receive a detailed visibility score out of 100 plus a downloadable PDF with an action plan.</p>
+          <h3>Få din poäng och rapport</h3>
+          <p>Ta emot en detaljerad synlighetspoäng av 100 samt en nedladdningsbar PDF med en konkret handlingsplan.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ── Metrics Explained ───────────────────────────────────────────────── -->
+  <!-- ── Vad vi mäter ──────────────────────────────────────────────────────── -->
   <section class="metrics-section">
     <div class="container">
-      <h2 class="section-title">What We Measure</h2>
+      <h2 class="section-title">Vad vi mäter</h2>
       <div class="metrics-grid">
         <div class="metric-card">
           <div class="metric-icon">⭐</div>
-          <h4>Star Rating</h4>
-          <p>Your Google rating vs. the ideal 5.0</p>
-          <span class="metric-pts">25 pts</span>
+          <h4>Stjärnbetyg</h4>
+          <p>Ditt Google-betyg jämfört med det ideala 5,0</p>
+          <span class="metric-pts">25 p</span>
         </div>
         <div class="metric-card">
           <div class="metric-icon">💬</div>
-          <h4>Review Volume</h4>
-          <p>How your review count compares to local competitors</p>
-          <span class="metric-pts">25 pts</span>
+          <h4>Antal recensioner</h4>
+          <p>Hur ditt antal recensioner står sig mot lokala konkurrenter</p>
+          <span class="metric-pts">25 p</span>
         </div>
         <div class="metric-card">
           <div class="metric-icon">📸</div>
-          <h4>Photos</h4>
-          <p>The number of photos on your profile</p>
-          <span class="metric-pts">20 pts</span>
+          <h4>Foton</h4>
+          <p>Antal foton på din Google Business-profil</p>
+          <span class="metric-pts">20 p</span>
         </div>
         <div class="metric-card">
           <div class="metric-icon">🏷️</div>
-          <h4>Categories</h4>
-          <p>How many relevant business categories you have listed</p>
-          <span class="metric-pts">15 pts</span>
+          <h4>Google-kategorier</h4>
+          <p>Antal Google-klassificeringstyper registrerade på din profil</p>
+          <span class="metric-pts">15 p</span>
         </div>
         <div class="metric-card">
           <div class="metric-icon">📝</div>
-          <h4>Description</h4>
-          <p>Whether your profile includes a business description</p>
-          <span class="metric-pts">10 pts</span>
+          <h4>Företagsbeskrivning</h4>
+          <p>Om din profil har en Google-redaktionell beskrivning</p>
+          <span class="metric-pts">10 p</span>
         </div>
         <div class="metric-card">
           <div class="metric-icon">↩️</div>
-          <h4>Response Rate</h4>
-          <p>How often you respond to customer reviews</p>
-          <span class="metric-pts">5 pts</span>
+          <h4>Svarsfrekvens</h4>
+          <p>Hur ofta du svarar på kundrecensioner</p>
+          <span class="metric-pts">5 p</span>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ── Footer ──────────────────────────────────────────────────────────── -->
+  <!-- ── Sidfot ─────────────────────────────────────────────────────────────── -->
   <footer class="site-footer">
     <div class="container">
-      <p>© 2025 LocalRankPro. All rights reserved.</p>
+      <p>© 2025 LocalRankPro. Alla rättigheter förbehållna.</p>
     </div>
   </footer>
 
