@@ -134,6 +134,16 @@ body {
 }
 .hero-subtitle strong { color: var(--white); }
 
+.hero-provoke {
+  font-size: 1rem;
+  color: #FFD54F;
+  font-style: italic;
+  text-align: center;
+  max-width: 580px;
+  margin: 0 auto 1.8rem;
+  line-height: 1.6;
+}
+
 /* Flash messages */
 .flash-container { max-width: 600px; margin: 0 auto 1.5rem; }
 .flash {
