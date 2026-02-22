@@ -145,6 +145,7 @@
               <th>Recensioner</th>
               <th>Foton</th>
               <th>Beskrivning</th>
+              <th>Poäng</th>
             </tr>
           </thead>
           <tbody>
@@ -152,16 +153,18 @@
               <td><strong>{{ business.name }}</strong> <span class="you-badge">DU</span></td>
               <td>{{ business.rating }} ★</td>
               <td>{{ "{:,}".format(business.review_count) }}</td>
-              <td>{{ business.photo_count }}</td>
+              <td>{% if business.photo_count_capped %}10+{% else %}{{ business.photo_count }}{% endif %}</td>
               <td>{% if business.has_description %}<span class="yes">✓ Ja</span>{% else %}<span class="no">✗ Nej</span>{% endif %}</td>
+              <td><strong>{{ scores.total }}</strong></td>
             </tr>
-            {% for comp in competitors %}
+            {% for comp, comp_score in competitors | zip(competitor_scores) %}
             <tr>
               <td>{{ comp.name }}</td>
               <td>{{ comp.rating }} ★</td>
               <td>{{ "{:,}".format(comp.review_count) }}</td>
-              <td>{{ comp.photo_count }}</td>
+              <td>{% if comp.photo_count_capped %}10+{% else %}{{ comp.photo_count }}{% endif %}</td>
               <td>{% if comp.has_description %}<span class="yes">✓ Ja</span>{% else %}<span class="no">✗ Nej</span>{% endif %}</td>
+              <td>{{ comp_score }}</td>
             </tr>
             {% endfor %}
           </tbody>

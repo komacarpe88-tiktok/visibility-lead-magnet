@@ -31,6 +31,8 @@ from utils.scoring import calculate_score
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "dev-secret-key-change-me")
 
+app.jinja_env.filters["zip"] = zip
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s  %(levelname)-8s  %(name)s  %(message)s",
@@ -102,6 +104,7 @@ def analyze():
 
     # ── Score ──────────────────────────────────────────────────────────────────
     scores = calculate_score(business, competitors)
+    competitor_scores = [calculate_score(c, [])["total"] for c in competitors]
 
     # ── Generate PDF (stored in memory as bytes) ───────────────────────────────
     pdf_bytes = None
@@ -133,6 +136,7 @@ def analyze():
         "city":          city,
         "business":      business,
         "competitors":   competitors,
+        "competitor_scores": competitor_scores,
         "scores":        scores,
         "pdf_bytes":     pdf_bytes,
     }
